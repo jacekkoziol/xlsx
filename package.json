@@ -1,0 +1,19 @@
+{
+  "name": "xlsx",
+  "version": "1.0.0",
+  "description": "Test xlsx-renderer in browser",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/jacekkoziol/xlsx.git"
+  },
+  "author": "Jacek Koziol",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jacekkoziol/xlsx/issues"
+  },
+  "homepage": "https://github.com/jacekkoziol/xlsx#readme"
+}
