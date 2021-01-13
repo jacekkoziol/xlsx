@@ -68,34 +68,78 @@ export class GenerateXLSXFile {
   }
 
   public async onRetrieveTemplate(): Promise<Blob> {
-    // return fetch('./xlsx-templates/template.xlsx').then((r: Response) => r.blob());
     return fetch(`./xlsx-templates/${this.templateName}`).then((r: Response) => r.blob());
   }
 
-  public exportXLSX(): void {
+  // public exportXLSX(): void {
+  //   console.log('exportXLSX view model:: this.viewModel');
+  //   this.onRetrieveTemplate()
+  //     .then((xlsxBlob: Blob) => {
+  //       const reader: FileReader = new FileReader();
+  //       reader.readAsArrayBuffer(xlsxBlob);
+  //       reader.addEventListener('loadend', async (e: ProgressEvent<FileReader>) => {
+  //         const renderer: Renderer = new Renderer();
+
+  //         if (reader.result instanceof ArrayBuffer) {
+  //           const workbook: Excel.Workbook = new Excel.Workbook();
+  //           await workbook.xlsx.load(reader.result);
+  //           const result: Excel.Workbook = await renderer.render(() => Promise.resolve(workbook), this.viewModel);
+
+  //           await result.xlsx
+  //             .writeBuffer()
+  //             .then((buffer: Excel.Buffer) => {
+  //               this.saveBlobToFile(new Blob([buffer]), `${Date.now()}_result_report.xlsx`);
+  //             })
+  //             .catch((err: Error) => console.log('Error writing excel export', err));
+  //         }
+  //       });
+  //     })
+  //     .catch((err: Error) => console.log('Error:', err));
+  // }
+
+  public async exportXLSX(): Promise<void> {
     console.log('exportXLSX view model:: this.viewModel');
-    this.onRetrieveTemplate()
-      .then((xlsxBlob: Blob) => {
-        const reader: FileReader = new FileReader();
-        reader.readAsArrayBuffer(xlsxBlob);
-        reader.addEventListener('loadend', async (e: ProgressEvent<FileReader>) => {
+    try {
+      const xlsxBlob: Blob = await this.onRetrieveTemplate();
+      const reader: FileReader = new FileReader();
+      reader.readAsArrayBuffer(xlsxBlob);
+
+      reader.addEventListener('loadend', async (e: ProgressEvent<FileReader>) => {
+        if (reader.result instanceof ArrayBuffer) {
           const renderer: Renderer = new Renderer();
+          const workbook: Excel.Workbook = new Excel.Workbook();
+          await workbook.xlsx.load(reader.result);
+          const result: Excel.Workbook = await renderer.render(() => Promise.resolve(workbook), this.viewModel);
+          const buffer: Excel.Buffer = await result.xlsx.writeBuffer()
+          this.saveBlobToFile(new Blob([buffer]), `${Date.now()}_result_report.xlsx`);
+        }
+      });
+    } catch (err) {
+      console.log('Error:', err);
+    }
 
-          if (reader.result instanceof ArrayBuffer) {
-            const workbook: Excel.Workbook = new Excel.Workbook();
-            await workbook.xlsx.load(reader.result);
-            const result: Excel.Workbook = await renderer.render(() => Promise.resolve(workbook), this.viewModel);
+    // this.onRetrieveTemplate()
+    //   .then((xlsxBlob: Blob) => {
+    //     const reader: FileReader = new FileReader();
+    //     reader.readAsArrayBuffer(xlsxBlob);
+    //     reader.addEventListener('loadend', async (e: ProgressEvent<FileReader>) => {
+    //       const renderer: Renderer = new Renderer();
 
-            await result.xlsx
-              .writeBuffer()
-              .then((buffer: Excel.Buffer) => {
-                this.saveBlobToFile(new Blob([buffer]), `${Date.now()}_result_report.xlsx`);
-              })
-              .catch((err: Error) => console.log('Error writing excel export', err));
-          }
-        });
-      })
-      .catch((err: Error) => console.log('Error:', err));
+    //       if (reader.result instanceof ArrayBuffer) {
+    //         const workbook: Excel.Workbook = new Excel.Workbook();
+    //         await workbook.xlsx.load(reader.result);
+    //         const result: Excel.Workbook = await renderer.render(() => Promise.resolve(workbook), this.viewModel);
+
+    //         await result.xlsx
+    //           .writeBuffer()
+    //           .then((buffer: Excel.Buffer) => {
+    //             this.saveBlobToFile(new Blob([buffer]), `${Date.now()}_result_report.xlsx`);
+    //           })
+    //           .catch((err: Error) => console.log('Error writing excel export', err));
+    //       }
+    //     });
+    //   })
+    //   .catch((err: Error) => console.log('Error:', err));
   }
 
   // Utilities - File Save
