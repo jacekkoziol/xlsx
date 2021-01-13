@@ -1,5 +1,5 @@
-import { Renderer } from '../node_modules/xlsx-renderer';
-import * as Excel from '../node_modules/exceljs';
+import { Renderer } from 'xlsx-renderer';
+import * as Excel from 'exceljs';
 
 export const VM1: object = {
   projects: [
