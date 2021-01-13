@@ -1,0 +1,31 @@
+:root {
+  height: 100%;
+  font-size: 62.5%;
+  --green: #218838;
+  --dark-green: #1e7e34;
+  --light-green: #1d9b3a;
+}
+
+body {
+  font-size: 1.6rem;
+  color: #444;
+  background-color: #fff;
+}
+
+main {
+  padding: 2rem;
+}
+
+button {
+  font-size: 2rem;
+  border: 1px solid var(--green);
+  background-color: var(--dark-green);
+  color: #fff;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  margin: 2rem;
+}
+
+button:hover {
+  background-color: var(--light-green);
+}
