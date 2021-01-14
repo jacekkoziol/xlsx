@@ -1,5 +1,6 @@
 import { Renderer } from 'xlsx-renderer';
 import * as Excel from 'exceljs';
+import {CellTemplateDebugPool} from "xlsx-renderer/lib/CellTemplateDebugPool";
 
 export const VM1: object = {
   projects: [
@@ -55,8 +56,14 @@ export const VM1: object = {
 };
 
 export class GenerateXLSXFile {
+  private renderer: Renderer;
   constructor(private templateName: string, private viewModel: any, private buttonId: string) {
     const btn: HTMLElement | null = document.getElementById(buttonId);
+    // todo @siemienik, add information about Debug possibilities into Readme
+    // todo @siemienik, add information about extending CellTemplatePool.
+    // todo @siemienik, add logging cell address into console.log inside CellTemplateDebugPool.match();
+    this.renderer = new Renderer(new CellTemplateDebugPool());
+
     console.log('Init');
 
     if (btn) {
@@ -75,15 +82,21 @@ export class GenerateXLSXFile {
     console.log('exportXLSX view model:: this.viewModel');
     try {
       const xlsxBlob: Blob = await this.onRetrieveTemplate();
-      const reader: FileReader = new FileReader();
-      reader.readAsArrayBuffer(xlsxBlob);
+      const fileReader: FileReader = new FileReader();
+      fileReader.readAsArrayBuffer(xlsxBlob);
 
-      reader.addEventListener('loadend', async (e: ProgressEvent<FileReader>) => {
-        if (reader.result instanceof ArrayBuffer) {
-          const renderer: Renderer = new Renderer();
-          const workbook: Excel.Workbook = new Excel.Workbook();
-          await workbook.xlsx.load(reader.result);
-          const result: Excel.Workbook = await renderer.render(() => Promise.resolve(workbook), this.viewModel);
+      fileReader.addEventListener('loadend', async (e: ProgressEvent<FileReader>) => {
+        const templateFileBuffer = fileReader.result;
+        if (templateFileBuffer instanceof ArrayBuffer) {
+          // todo @siemeinik, Add information about correct template factory
+          // todo @siemienik, Add feature which detect that template and output objects is same (Consider about thrown an error or warning, or do clone if possible and works properly)
+          // todo @siemienik, Add possibility to load from fileBuffer.
+          const templateFactory = () => { // All this logic must be provided into xlsx-renderer as a function
+            const workbook: Excel.Workbook = new Excel.Workbook();
+            return workbook.xlsx.load(templateFileBuffer);
+          };
+
+          const result: Excel.Workbook = await this.renderer.render(templateFactory, this.viewModel);
           const buffer: Excel.Buffer = await result.xlsx.writeBuffer()
           this.saveBlobToFile(new Blob([buffer]), `${Date.now()}_result_report.xlsx`);
         }
