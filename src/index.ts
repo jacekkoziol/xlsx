@@ -55,8 +55,20 @@ export const VM1: object = {
   ],
 };
 
+const VM_GT: object = {
+  main: 'Main Text',
+  totalSum: 291827627,
+  rows: [
+    { id: 1, tier: 1, name: 'Agency name', totalAmount: 1000 },
+    { id: 2, tier: 1, name: 'Agency name 2', totalAmount: 1980 },
+    { id: 3, tier: 4, name: 'Agency name 3', totalAmount: 1283710 },
+    { id: 4, tier: 3, name: 'Agency name 4', totalAmount: 2000000 },
+  ],
+};
+
 export class GenerateXLSXFile {
   private renderer: Renderer;
+
   constructor(private templateName: string, private viewModel: any, private buttonId: string) {
     const btn: HTMLElement | null = document.getElementById(buttonId);
     // todo @siemienik, add information about Debug possibilities into Readme
@@ -91,7 +103,7 @@ export class GenerateXLSXFile {
           // todo @siemeinik, Add information about correct template factory
           // todo @siemienik, Add feature which detect that template and output objects is same (Consider about thrown an error or warning, or do clone if possible and works properly)
           // todo @siemienik, Add possibility to load from fileBuffer.
-          const templateFactory = () => { // All this logic must be provided into xlsx-renderer as a function
+          const templateFactory: () => Promise<Excel.Workbook> = () => { // All this logic must be provided into xlsx-renderer as a function
             const workbook: Excel.Workbook = new Excel.Workbook();
             return workbook.xlsx.load(templateFileBuffer);
           };
