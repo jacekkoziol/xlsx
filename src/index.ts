@@ -55,17 +55,6 @@ export const VM1: object = {
   ],
 };
 
-const VM_GT: object = {
-  main: 'Main Text',
-  totalSum: 291827627,
-  rows: [
-    { id: 1, tier: 1, name: 'Agency name', totalAmount: 1000 },
-    { id: 2, tier: 1, name: 'Agency name 2', totalAmount: 1980 },
-    { id: 3, tier: 4, name: 'Agency name 3', totalAmount: 1283710 },
-    { id: 4, tier: 3, name: 'Agency name 4', totalAmount: 2000000 },
-  ],
-};
-
 export class GenerateXLSXFile {
   private renderer: Renderer;
 
@@ -110,7 +99,10 @@ export class GenerateXLSXFile {
 
           const result: Excel.Workbook = await this.renderer.render(templateFactory, this.viewModel);
           const buffer: Excel.Buffer = await result.xlsx.writeBuffer()
-          this.saveBlobToFile(new Blob([buffer]), `${Date.now()}_result_report.xlsx`);
+          // this.saveBlobToFile(new Blob([buffer]), `${Date.now()}_result_report.xlsx`);
+          setTimeout(() => {
+            this.saveBlobToFile(new Blob([buffer]), `${Date.now()}_result_report.xlsx`);
+          }, 1000);
         }
       });
     } catch (err) {
