@@ -97,7 +97,8 @@ export class GenerateXLSXFile {
             return workbook.xlsx.load(templateFileBuffer);
           };
 
-          const result: Excel.Workbook = await this.renderer.render(templateFactory, this.viewModel);
+          const vmClone = JSON.parse(JSON.stringify(this.viewModel)); // workaround
+          const result: Excel.Workbook = await this.renderer.render(templateFactory, vmClone);
           const buffer: Excel.Buffer = await result.xlsx.writeBuffer()
           // this.saveBlobToFile(new Blob([buffer]), `${Date.now()}_result_report.xlsx`);
           setTimeout(() => {
