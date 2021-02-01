@@ -61,8 +61,8 @@ export class GenerateXLSXFile {
   constructor(private templateName: string, private viewModel: any, private buttonId: string) {
     const btn: HTMLElement | null = document.getElementById(buttonId);
 
-    // The is no need to generate multiple renderers, so if renderer no exists fo far,
-    // we are creating one and store it in the static field
+    // There is no need to generate multiple renderers,
+    // If the renderer hasn't been created yet, we are creating one and storing it in the static field to avoid multiple creation.
     if (!GenerateXLSXFile.renderer) {
       GenerateXLSXFile.renderer = new Renderer(new CellTemplateDebugPool());
     }
