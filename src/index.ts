@@ -1,5 +1,5 @@
 import { Renderer } from 'xlsx-renderer';
-import * as Excel from 'exceljs';
+import * as ExcelJs from 'exceljs';
 import {CellTemplateDebugPool} from "xlsx-renderer/lib/CellTemplateDebugPool";
 
 export const VM1: object = {
@@ -56,14 +56,16 @@ export const VM1: object = {
 };
 
 export class GenerateXLSXFile {
-  private renderer: Renderer;
+  public static renderer: Renderer;
 
   constructor(private templateName: string, private viewModel: any, private buttonId: string) {
     const btn: HTMLElement | null = document.getElementById(buttonId);
-    // todo @siemienik, add information about Debug possibilities into Readme
-    // todo @siemienik, add information about extending CellTemplatePool.
-    // todo @siemienik, add logging cell address into console.log inside CellTemplateDebugPool.match();
-    this.renderer = new Renderer(new CellTemplateDebugPool());
+
+    // The is no need to generate multiple renderers, so if renderer no exists fo far,
+    // we are creating one and store it in the static field
+    if (!GenerateXLSXFile.renderer) {
+      GenerateXLSXFile.renderer = new Renderer(new CellTemplateDebugPool());
+    }
 
     console.log('Init');
 
@@ -80,30 +82,19 @@ export class GenerateXLSXFile {
   }
 
   public async exportXLSX(): Promise<void> {
-    console.log('exportXLSX view model:: this.viewModel');
+    console.log('exportXLSX view model:: this.viewModel', this.viewModel);
+
     try {
       const xlsxBlob: Blob = await this.onRetrieveTemplate();
       const fileReader: FileReader = new FileReader();
       fileReader.readAsArrayBuffer(xlsxBlob);
 
       fileReader.addEventListener('loadend', async (e: ProgressEvent<FileReader>) => {
-        const templateFileBuffer = fileReader.result;
+        const templateFileBuffer: string | ArrayBuffer | null = fileReader.result;
         if (templateFileBuffer instanceof ArrayBuffer) {
-          // todo @siemeinik, Add information about correct template factory
-          // todo @siemienik, Add feature which detect that template and output objects is same (Consider about thrown an error or warning, or do clone if possible and works properly)
-          // todo @siemienik, Add possibility to load from fileBuffer.
-          const templateFactory: () => Promise<Excel.Workbook> = () => { // All this logic must be provided into xlsx-renderer as a function
-            const workbook: Excel.Workbook = new Excel.Workbook();
-            return workbook.xlsx.load(templateFileBuffer);
-          };
-
-          const vmClone = JSON.parse(JSON.stringify(this.viewModel)); // workaround
-          const result: Excel.Workbook = await this.renderer.render(templateFactory, vmClone);
-          const buffer: Excel.Buffer = await result.xlsx.writeBuffer()
-          // this.saveBlobToFile(new Blob([buffer]), `${Date.now()}_result_report.xlsx`);
-          setTimeout(() => {
-            this.saveBlobToFile(new Blob([buffer]), `${Date.now()}_result_report.xlsx`);
-          }, 1000);
+          const result: ExcelJs.Workbook = await GenerateXLSXFile.renderer.renderFromArrayBuffer(templateFileBuffer, this.viewModel);
+          const buffer: ExcelJs.Buffer = await result.xlsx.writeBuffer();
+          this.saveBlobToFile(new Blob([buffer]), `${Date.now()}_result_report.xlsx`);
         }
       });
     } catch (err) {

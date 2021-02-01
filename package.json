@@ -22,7 +22,7 @@
     "exceljs": "^4.2.0",
     "ts-loader": "^8.0.14",
     "webpack": "^5.13.0",
-    "xlsx-renderer": "^2.3.1"
+    "xlsx-renderer": "^2.3.4"
   },
   "devDependencies": {
     "tslib": "^2.1.0",
