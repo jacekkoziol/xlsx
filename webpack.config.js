@@ -4,6 +4,8 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
+//optimization: { minimize: false }, // FIX the problem for the production mode
+
 module.exports = {
     entry: './src/index.ts',
     devtool: 'inline-source-map',
