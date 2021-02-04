@@ -2,7 +2,9 @@ import { Renderer } from 'xlsx-renderer';
 import * as ExcelJs from 'exceljs';
 import {CellTemplateDebugPool} from "xlsx-renderer/lib/CellTemplateDebugPool";
 
+
 export const VM1: object = {
+  firstLineVariable: 'If you see this text, it means that the variable was replaced correctly :)',
   projects: [
     {
       name: 'ExcelJS',
